@@ -1,0 +1,53 @@
+#https://dev.to/omiossec/getting-started-with-azure-devops-api-with-powershell-59nn
+
+
+$repoFolder = "c:\repos\merlionOptimized"
+$path�����=�Split-Path�-parent�$MyInvocation.MyCommand.Definition��
+#$newpath��=�$path�+�"\repos.csv"�
+$newpath��=�$repoFolder�+�"\repos.csv"�
+$csv������=�@()�
+$csv������=�Import-Csv�-Path�$newpath�
+$encodedPat = ""
+$OrganizationName = "Brett-OJ"
+$ProjectName = "MerlionOptimised"
+$action = 2
+$AzureDevOpsAuthenicationHeader = @{Authorization = 'Basic ' + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$($encodedPat)")) }
+$projUri = "https://dev.azure.com/$($OrganizationName)/$($ProjectName)"
+$uriRepos = $projUri + "/_apis/git/repositories?api-version=6.1-preview.1"
+
+
+
+foreach ($item in $csv) {
+
+$reponame = $item.name
+$uriGetRepo = $projUri + "/_apis/git/repositories/$($reponame)?api-version=6.1-preview.1"
+$repouri = $projUri + "/_git/$($reponame)"
+
+$reponame = "c:\repos\merlionOptimized\" + $reponame
+
+
+#This code to create repos 
+$repoBody = @{
+     "name" = $reponame
+  }  | ConvertTo-Json
+
+#$repo = Invoke-WebRequest -method Post -Headers $AzureDevOpsAuthenicationHeader -body $repoBody -Uri $uriRepos -ContentType "application/json" -UseBasicParsing
+
+#This code to git clone the repo 
+#git clone $repouri
+
+#this code to push repos
+cd $reponame
+#$GitUrl =  "https://Brett-OJ@dev.azure.com/Brett-OJ/MerlionOptimised/_git/$($repoName)"
+git push
+
+#Thhis code to commit 
+#git commit -m "Initial Commit"
+
+#this code to add files before push
+#git add .
+
+#$GitUrl
+cd ..
+
+}
